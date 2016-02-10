@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Mail-Encoder</title>
+	<link href="//fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic,900,900italic" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+</head>
+
+<body>
+	
+	<div class="modal show" id="modalCompose">
+  	<div class="modal-dialog">
+    	<div class="modal-content">
+	      <div class="modal-header">
+	        <h4 class="modal-title"><i class="fa fa-envelope"></i> <span>Mail-Encoder</span></h4>
+	      </div>
+	      <div class="modal-body">
+	        <form role="form" class="form-horizontal">
+				
+				<div class="form-group">
+		         <div class="container">
+          			<label class="" for="email">Input (E-Mail)</label>
+					</div>
+				</div>
+
+          	<div class="form-group input-group">
+				      <input type="text" id="email" class="form-control" placeholder="E-Mail">
+				      <span class="input-group-btn">
+				        	<button id="encode" class="btn btn-primary disabled" type="button" data-placement="right" title="click to generate code">
+				        		<i class="fa fa-gear"></i>
+				        	</button>
+				      </span>
+		    	</div><!-- /input-group -->
+
+
+	         <div class="form-group">
+	            <label class="col-sm-12" for="output">Output (copy)</label>
+	            <div class="col-sm-12">
+	            	<pre class="pre-scrollable" id="output" data-placement="right" title="copied to clipboard"></pre>
+	            </div>
+	         </div>
+
+	         <div class="form-group">
+		         <div class="container">
+						<h4>Test</h4>
+			        	<div id="test"></div>
+	          	</div>
+				</div>
+
+	        	</form>
+	      </div>
+	      <div class="modal-footer">
+	        
+	      </div>
+    	</div>
+    <!-- /.modal-content -->
+  	</div>
+  <!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal compose message -->
+
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.5/clipboard.min.js"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script>
+		$( document ).ready(function() {
+			var trace = function(o){ console.log(o); };
+			// 
+			String.prototype.shuffle = function () {
+			    var a = this.split(''),
+			        n = a.length;
+
+			    for(var i = n - 1; i > 0; i--) {
+			        var j = Math.floor(Math.random() * (i + 1));
+			        var tmp = a[i];
+			        a[i] = a[j];
+			        a[j] = tmp;
+			    }
+			    return a.join('');
+			}
+			String.prototype.strpos = function (needle, offset) {
+			  var i = (this + '')
+			    .indexOf(needle, (offset || 0));
+			  return i === -1 ? false : i;
+			}
+			// 
+			Math.rand = function(min, max) {
+				return Math.floor(Math.random()*(max-min+1)+min);
+			}
+			// 
+			// ---------------------------------------------------------------------
+			// 
+			function encode_email (email) { 
+				var charset = '+-.0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
+				var key = charset.shuffle(); 
+				var cipher_text = ''; 
+				var script = ''; 
+				var id = 'e' + Math.rand(1, 999999999);
+				  	for ( var i = 0; i < email.length; i++) {
+				  		cipher_text += key[charset.strpos(email[i])];
+				  	}
+				  	script = 'var a="' + key + '";var b=a.split("").sort().join("");var c="' + cipher_text + '";var d="";';
+				  	script += 'for(var e=0;e<c.length;e++)d+=b.charAt(a.indexOf(c.charAt(e)));';
+				  	script += 'document.getElementById("' + id + '").innerHTML="<a href=\\"mailto:"+d+"\\">"+d+"</a>"';
+				  	script = "eval(\"" + script.replace(/\\/g, '\\\\').replace(/"/g, '\\\"') + "\")"; 
+				  	script = '<script type="text/javascript">/*<![CDATA[*/' + script + '/*]]>*/' + '<\/script>';
+				  	return '<span id="' + id  + '">protected email address</span>' + script;
+			}
+			// 
+			// ---------------------------------------------------------------------
+			// 
+			var tooltip_copied = $('#output').tooltip();
+			var tooltip_click = $('#encode').tooltip();
+			// 
+			$('#email').on('keyup blur change paste', function(ev){
+				if( $(this).val() === '' ) {
+					$('#encode').addClass('disabled');
+					return false;
+				} else {
+					$('#encode').removeClass('disabled');
+					tooltip_click.tooltip('show');
+				}
+			}).focus();
+			// 
+			$('#encode').on('click', function(ev){
+				ev.preventDefault();
+				tooltip_click.tooltip('hide');
+				// 
+				var code = encode_email( $('#email').val() );
+				$('#output').text( code );
+				$('#test').html( code );
+				// 
+				var clipboard = new Clipboard('#encode', {
+			 		text: function(trigger) {
+			 			return $('#output').text().trim();
+			 		}
+			 	});
+				clipboard.on('success', function(e) {
+			      tooltip_copied.tooltip('show');
+			   });
+			});			
+		});
+	</script>
+</body>
+</html>

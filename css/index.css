@@ -1,0 +1,39 @@
+body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #eee;
+  font-family: 'Lato', sans-serif;
+}
+.modal-header {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-color: #286090;
+  background-color: #286090;
+}
+.modal-title {
+  color: #FFF;
+}
+.form-group.input-group {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+#test {
+	width: 100%;
+	min-height: 1em;
+}
+
+.btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+#output {
+  font-size: 11px;
+}
+
+pre {
+  white-space: pre-wrap;       /* css-3 */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+ white-space: -pre-wrap;      /* Opera 4-6 */
+ white-space: -o-pre-wrap;    /* Opera 7 */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}

@@ -94,6 +94,21 @@
 			// 
 			// ---------------------------------------------------------------------
 			// 
+			function debounce(func, wait, immediate) {
+				var timeout;
+				return function() {
+					var context = this, args = arguments;
+					var later = function() {
+						timeout = null;
+						if (!immediate) func.apply(context, args);
+					};
+					var callNow = immediate && !timeout;
+					clearTimeout(timeout);
+					timeout = setTimeout(later, wait);
+					if (callNow) func.apply(context, args);
+				};
+			};
+			// 
 			function encode_email (email) { 
 				var charset = '+-.0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
 				var key = charset.shuffle(); 
@@ -108,7 +123,7 @@
 				  	script += 'document.getElementById("' + id + '").innerHTML="<a href=\\"mailto:"+d+"\\">"+d+"</a>"';
 				  	script = "eval(\"" + script.replace(/\\/g, '\\\\').replace(/"/g, '\\\"') + "\")"; 
 				  	script = '<script type="text/javascript">/*<![CDATA[*/' + script + '/*]]>*/' + '<\/script>';
-				  	return '<span id="' + id  + '">protected email address</span>' + script;
+				  	return '<span id="' + id  + '">Bitte javascript einschalten.</span>' + script;
 			}
 			// 
 			// ---------------------------------------------------------------------
@@ -116,7 +131,7 @@
 			var tooltip_copied = $('#output').tooltip();
 			var tooltip_click = $('#encode').tooltip();
 			// 
-			$('#email').on('keyup blur change paste', function(ev){
+			var onInput = debounce(function() {
 				if( $(this).val() === '' ) {
 					$('#encode').addClass('disabled');
 					return false;
@@ -124,7 +139,8 @@
 					$('#encode').removeClass('disabled');
 					tooltip_click.tooltip('show');
 				}
-			}).focus();
+			}, 250);
+			$('#email').on('keyup blur change paste', onInput).focus();
 			// 
 			$('#encode').on('click', function(ev){
 				ev.preventDefault();

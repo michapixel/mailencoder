@@ -3,6 +3,7 @@ body {
   padding-bottom: 40px;
   background-color: #eee;
   font-family: 'Lato', sans-serif;
+  height: 100%;
 }
 .modal-header {
   border-top-left-radius: 5px;
@@ -36,4 +37,10 @@ pre {
  white-space: -pre-wrap;      /* Opera 4-6 */
  white-space: -o-pre-wrap;    /* Opera 7 */
  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+footer {
+  position: fixed;
+  bottom: 0;
+  text-align: center;
+  z-index: 100000;
 }
